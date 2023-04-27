@@ -92,7 +92,15 @@ for i, mms in enumerate(mmsids, 0):
     #Looks for PURL in 856 in record and adds to Dictionary in full
     try:
         f856 = soup.findAll("datafield", attrs={"tag": '856'})
-        recurl = f856[0].getText()
+        
+        #Check for $a in first occurrence of 856, if no $a, look for $u, otherwise put "error" in the dictionary
+        try:
+            recurl = f856[0].find("subfield", attrs={"code": "a"}).getText()
+        except AttributeError:
+            try:
+                recurl = f856[0].find("subfield", attrs={"code": "u"}).getText()
+            except AttributeError:
+                recurl = "Error"
         dict['purl'].append(recurl)
 
         #Also adds just the numbers from the end of the PURL to the Dictionary in a separate field
